@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bank of Flatiron</title>
+</head>
+<body>
+  <h1>Bank of Flatiron</h1>
+
+  <form id="transactionForm">
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" required>
+    <button type="submit">Add Transaction</button>
+  </form>
+
+  <input type="text" id="searchBar" placeholder="Search by Description">
+
+  <button id="sortCategoryButton">Sort by Category</button>
+  <button id="sortDescriptionButton">Sort by Description</button>
+
+  <table id="transactionTable">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody id="transactionTableBody">
+    </tbody>
+  </table>
+  <th>Actions</th>
+
+<td>
+  <button class="delete-button" data-transaction-id="1">Delete</button>
+</td>
+
+
+  <script>
+    const transactions = [
+      {
+        "id": 1,
+        "date": "2019-12-01",
+        "description": "Paycheck from Bob's Burgers",
+        "category": "Income",
+        "amount": 1000
+      },
+    ];
+
+    const addTransaction = (description, amount) => {
+      const newTransaction = {
+        id: transactions.length + 1,
+        date: new Date().toISOString(),
+        description: description,
+        category: "Custom Category",
+        amount: parseFloat(amount),
+      };
+      transactions.push(newTransaction);
+      updateTransactionTable();
+    };
+
+    const updateTransactionTable = () => {
+      const tableBody = document.querySelector("#transactionTableBody");
+      tableBody.innerHTML = "";
+
+      const searchTerm = document.querySelector("#searchBar").value.toLowerCase();
+
+      transactions.forEach((transaction) => {
+        if (transaction.description.toLowerCase().includes(searchTerm)) {
+          const row = tableBody.insertRow();
+          const cell1 = row.insertCell(0);
+          const cell2 = row.insertCell(1);
+          cell1.textContent = transaction.description;
+          cell2.textContent = transaction.amount.toFixed(2);
+        }
+      });
+    };
+
+    const form = document.querySelector("#transactionForm");
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const description = document.querySelector("#description").value;
+      const amount = parseFloat(document.querySelector("#amount").value);
+      if (!isNaN(amount)) {
+        addTransaction(description, amount);
+        form.reset();
+      }
+    });
+
+    const searchBar = document.querySelector("#searchBar");
+    searchBar.addEventListener("input", updateTransactionTable);
+
+    document.getElementById("sortCategoryButton").addEventListener("click", () => {
+      transactions.sort((a, b) => a.category.localeCompare(b.category));
+      updateTransactionTable();
+    });
+
+    document.getElementById("sortDescriptionButton").addEventListener("click", () => {
+      transactions.sort((a, b) => a.description.localeCompare(b.description));
+      updateTransactionTable();
+    });
+
+    updateTransactionTable();
+  </script>
+</body>
+</html>
